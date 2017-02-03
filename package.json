@@ -1,0 +1,26 @@
+{
+  "name": "asana-central",
+  "version": "0.0.1",
+  "description": "A manager's read-only dashboard on Asana projects.",
+  "main": "index.js",
+  "dependencies": {
+    "asana": "^0.15.0",
+    "express": "^4.14.1",
+    "react": "^15.4.2",
+    "react-router": "^3.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schatten/asana-central.git"
+  },
+  "author": "Dipanjan Mukherjee (dipanjan.mu@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/schatten/asana-central/issues"
+  },
+  "homepage": "https://github.com/schatten/asana-central#readme"
+}

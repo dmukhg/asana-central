@@ -2,6 +2,8 @@ var Asana = require('asana');
 var minimist = require('minimist');
 
 var projects = require('./projects');
+var workspaces = require('./workspaces');
+var sections = require('./sections');
 
 function usage() {
   // Print usage
@@ -14,10 +16,12 @@ function usage() {
  * Verifies that argv has the specified key. If found, returns the value of that
  * key, else errors out to console after printing the message.
  */
-function hasParam(argv, key, message) {
-  if (!argv.hasOwnProperty(key)) {
+function hasParam(argv, key, message, optional) {
+  if (!argv.hasOwnProperty(key) && !optional) {
     console.error(message);
     process.exit(1);
+  } else if (!argv.hasOwnProperty(key) && optional) {
+    return undefined;
   } else {
     return argv[key];
   }
@@ -37,7 +41,8 @@ var argv = minimist(process.argv.slice(2));
 
 // Switch validations
 var token = hasParam(argv, 't', 'Token not provided');
-var workspace = hasParam(argv, 'w', 'Workspace not provided');
+var workspace = hasParam(argv, 'w', 'Workspace not provided', true);
+var project = hasParam(argv, 'p', 'Project not provided', true);
 
 // Command validation;
 if (argv['_'].length === 0) {
@@ -46,9 +51,20 @@ if (argv['_'].length === 0) {
 } else {
   var command = argv['_'][0];
   switch (command) {
-    case 'list':
+    case 'list-projects':
       projects.list(createClient(token), workspace)
         .then(projects.formatter)
         .catch(errorHandler)
+      break;
+    case 'list-workspaces':
+      workspaces.list(createClient(token))
+        .then(workspaces.formatter)
+        .catch(errorHandler)
+      break;
+    case 'list-sections':
+      sections.list(createClient(token), workspace, project)
+        .then(sections.formatter)
+        .catch(errorHandler);
+        break;
   }
 }

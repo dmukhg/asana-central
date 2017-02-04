@@ -1,28 +1,37 @@
 var lodash = require('lodash');
 
+var workspaces = require('./workspaces');
+
 exports = module.exports = {}
 
-exports.list = function (client, wsIdentifier) {
-  return client.users.me()
-  .then(function (user) {
-    var workspaces = user.workspaces;
-    var ws = lodash.find(workspaces, function (wsObj) {
-      return wsObj.id === wsIdentifier || wsObj.name === wsIdentifier;
+var lookupProject = exports.lookupProject = function (client, wsId, projectIdentifier) {
+  return client.projects.findByWorkspace(wsId)
+  .then(function (response) {
+    var prj = lodash.find(response.data, function (prjObj) {
+      return prjObj.id === projectIdentifier || prjObj.name === projectIdentifier;
     });
 
-    if (ws) {
-      return ws.id;
+    if (prj) {
+      return prj.id;
     } else {
-      throw Error('Workspace not found')
+      throw Error('Project not found')
     }
   })
+}
+
+exports.list = function (client, wsIdentifier) {
+  return workspaces.lookupWorkspace(client, wsIdentifier)
   .then(function (wsId) {
     return client.projects.findByWorkspace(wsId);
   });
 }
 
 exports.formatter = function (response) {
-  lodash.each(response.data, function (project) {
-    console.log(project.name);
-  });
+  var table = require('text-table');
+
+  var t = table(lodash.map(response.data, function (project) {
+    return [project.id, project.name];
+  }), {align: ['r', 'l']});
+
+  console.log(t);
 }
